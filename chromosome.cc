@@ -30,7 +30,16 @@ Chromosome::~Chromosome()
 void
 Chromosome::mutate()
 {
-  // Add your implementation here
+
+  int i1 = std::default_random_engine() % order_.size();
+  int i2 = std::default_random_engine() % order_.size();
+  while (i1 == i2) {
+    i2 = std::default_random_engine() % order_.size();
+  }
+  Cities c1 = order_[i1];
+  Cities c2 = order_[i2];
+  order_[i1] = c2;
+  order_[i2] = c1;
 
   assert(is_valid());
 }
@@ -92,7 +101,13 @@ Chromosome::get_fitness() const
 bool
 Chromosome::is_valid() const
 {
-  // Add your implementation here
+  for (int i = 0; i < order_.size(); i++){
+    if (this->is_in_range(order_.begin(), order_.end(), i)){
+    } else {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Find whether a certain value appears in a given range of the chromosome.
@@ -101,5 +116,9 @@ Chromosome::is_valid() const
 bool
 Chromosome::is_in_range(unsigned value, unsigned begin, unsigned end) const
 {
-  // Add your implementation here
+  if (std::find(order_[begin], order_[end], i)){
+      return true;
+    } else {
+      return false;
+    }
 }
