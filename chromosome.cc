@@ -30,11 +30,14 @@ Chromosome::~Chromosome()
 void
 Chromosome::mutate()
 {
+  std::random_device rd; // obtain a random number from hardware
+  std::mt19937 gen(rd()); // seed the generator
+  std::uniform_int_distribution<> dist(0, order_.size()); // define the range
 
-  int i1 = std::default_random_engine() % order_.size();
-  int i2 = std::default_random_engine() % order_.size();
+  int i1 = dist(gen);
+  int i2 = dist(gen);
   while (i1 == i2) {
-    i2 = std::default_random_engine() % order_.size();
+    i2 = dist(gen);
   }
   Cities c1 = order_[i1];
   Cities c2 = order_[i2];
