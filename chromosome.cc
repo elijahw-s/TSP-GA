@@ -39,11 +39,10 @@ Chromosome::mutate()
   while (i1 == i2) {
     i2 = dist(gen);
   }
-  Cities c1 = order_[i1];
-  Cities c2 = order_[i2];
-  order_[i1] = c2;
-  order_[i2] = c1;
-
+  auto temp = order_[i1];
+  order_[i1] = order_[i2];
+  order_[i2] = temp;
+  
   assert(is_valid());
 }
 
@@ -97,6 +96,9 @@ double
 Chromosome::get_fitness() const
 {
   // Add your implementation here
+    auto dist=calculate_total_distance();
+    return 1/dist;
+
 }
 
 // A chromsome is valid if it has no repeated values in its permutation,
@@ -105,10 +107,10 @@ bool
 Chromosome::is_valid() const
 {
   for (int i = 0; i < order_.size(); i++){
-    if (this->is_in_range(order_.begin(), order_.end(), i)){
-    } else {
-      return false;
-    }
+	auto a=std::find(order_.begin(), order_.end(), i);
+	if(a==order_.end()){
+		return false;
+	}
   }
   return true;
 }
@@ -119,9 +121,10 @@ Chromosome::is_valid() const
 bool
 Chromosome::is_in_range(unsigned value, unsigned begin, unsigned end) const
 {
-  if (std::find(order_[begin], order_[end], i)){
+ /* if (std::find(order_[begin], order_[end], value)){
       return true;
     } else {
       return false;
-    }
+    }*/
+	return true;
 }
