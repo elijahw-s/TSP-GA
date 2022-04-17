@@ -56,6 +56,22 @@ Chromosome::recombine(const Chromosome* other)
   assert(other->is_valid());
 
   // Add your implementation here
+	mutate();
+  std::random_device rd; // obtain a random number from hardware
+  std::mt19937 gen(rd()); // seed the generator
+  
+	//define the range as [0, len)
+	std::uniform_int_distribution<> dist1(0, order_.size()); 
+	int b=dist1(gen);
+	
+	//define the range as [b, len)
+	std::uniform_int_distribution<> dist2(0, order_.size()); 
+	int e=dist2(gen);
+
+	auto child1 = create_crossover_child(this, other, b, e);
+	auto child2 = create_crossover_child(other, this, b, e);
+	
+	return std::pair<Chromosome*, Chromosome*>(child1, child2);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -121,10 +137,10 @@ Chromosome::is_valid() const
 bool
 Chromosome::is_in_range(unsigned value, unsigned begin, unsigned end) const
 {
- /* if (std::find(order_[begin], order_[end], value)){
-      return true;
-    } else {
-      return false;
-    }*/
+	auto b = order_.begin() + begin;
+	auto e = order_.begin() + end;
+	if(std::find(b, e, value) == order_.end()){
+		return false;
+	}
 	return true;
 }
