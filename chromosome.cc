@@ -112,8 +112,8 @@ double
 Chromosome::get_fitness() const
 {
   // Add your implementation here
-    auto dist=calculate_total_distance();
-    return 1/dist;
+    double fitness=1/calculate_total_distance();
+    return fitness;
 
 }
 
@@ -123,10 +123,10 @@ bool
 Chromosome::is_valid() const
 {
   for (int i = 0; i < order_.size(); i++){
-	auto a=std::find(order_.begin(), order_.end(), i);
-	if(a==order_.end()){
-		return false;
-	}
+    auto a=std::find(order_.begin(), order_.end(), i);
+    if(a==order_.end()){
+      return false;
+    }
   }
   return true;
 }
