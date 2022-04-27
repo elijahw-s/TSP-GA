@@ -62,11 +62,13 @@ Chromosome::recombine(const Chromosome* other)
   
 	//define the range as [0, len)
 	std::uniform_int_distribution<> dist1(0, order_.size()); 
-	int b=dist1(gen);
+	int rand1=dist1(gen);
 	
 	//define the range as [b, len)
 	std::uniform_int_distribution<> dist2(0, order_.size()); 
-	int e=dist2(gen);
+	int rand2=dist2(gen);
+  int b = std::min(rand1, rand2);
+  int e = std::max(rand1, rand2);
 
 	auto child1 = create_crossover_child(this, other, b, e);
 	auto child2 = create_crossover_child(other, this, b, e);
@@ -82,21 +84,23 @@ Chromosome*
 Chromosome::create_crossover_child(const Chromosome* p1, const Chromosome* p2,
                                    unsigned b, unsigned e) const
 {
+  const unsigned len = p1->order_.size();
+  assert(len == p2->order_.size());
   Chromosome* child = p1->clone();
 
   // We iterate over both parents separately, copying from parent1 if the
   // value is within [b,e) and from parent2 otherwise
   unsigned i = 0, j = 0;
 
-  for ( ; i < p1->order_.size() && j < p2->order_.size(); ++i) {
+  for ( ; i < len && j < len; ++i) {
     if (i >= b and i < e) {
       child->order_[i] = p1->order_[i];
     }
     else { // Increment j as long as its value is in the [b,e) range of p1
       while (p1->is_in_range(p2->order_[j], b, e)) {
         ++j;
-        assert(j < p2->order_.size());
       }
+      assert(j < len);
       child->order_[i] = p2->order_[j];
       j++;
     }
@@ -112,7 +116,7 @@ double
 Chromosome::get_fitness() const
 {
   // Add your implementation here
-    double fitness=1/calculate_total_distance();
+    double fitness=1/(1+calculate_total_distance());
     return fitness;
 
 }
@@ -122,7 +126,7 @@ Chromosome::get_fitness() const
 bool
 Chromosome::is_valid() const
 {
-  for (int i = 0; i < order_.size(); i++){
+  for (unsigned i = 0; i < order_.size(); i++){
     auto a=std::find(order_.begin(), order_.end(), i);
     if(a==order_.end()){
       return false;

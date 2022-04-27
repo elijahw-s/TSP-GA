@@ -35,16 +35,16 @@ void Deme::compute_next_generation()
 {
   static std::uniform_real_distribution<> dist(0.0, 1.0);
   std::vector<Chromosome*> new_pop_;
-  for (int i=0; i<pop_size/2; i++){
+  for (unsigned i=0; i<pop_.size()/2; i++){
     auto chrom1 = select_parent();
     auto chrom2 = select_parent();
-    if (dist(generator) <= mut_rate_){
-      chrom1.mutate()
+    if (dist(generator_) <= mut_rate_){
+      chrom1->mutate();
     }
-    if (dist(generator) <= mut_rate_){
-      chrom2.mutate()
+    if (dist(generator_) <= mut_rate_){
+      chrom2->mutate();
     }
-    auto new_chroms = chrom1.recombine(*chrom2);
+    auto new_chroms = chrom1->recombine(chrom2);
     new_pop_.push_back(new_chroms.first);
     new_pop_.push_back(new_chroms.second);
   }
@@ -59,9 +59,9 @@ const Chromosome* Deme::get_best() const
 {
   double best = 0;
   double fitness;
-  auto best_chrom;
+  auto best_chrom = pop_[0];
   for (auto chrom : pop_){
-    fitness = chrom.get_fitness();
+    fitness = chrom->get_fitness();
     if (fitness > best){
       best = fitness;
       best_chrom = chrom;
@@ -79,16 +79,17 @@ Chromosome* Deme::select_parent()
   
 	//define the range as [0, len)
 	std::uniform_real_distribution<> dist1(0, 1); 
-  double total_prob = 0
+  double total_prob = 0;
   double total_fitness = 0;
   for (auto chrom : pop_){
-    total_fitness += chrom.get_fitness();
+    total_fitness += chrom->get_fitness();
   }
   double prob = dist1(gen);
   for (auto chrom : pop_){
-    total_prob += (chrom.get_fitness()/total_fitness);
+    total_prob += (chrom->get_fitness()/total_fitness);
     if (total_prob > prob){
-      return chrom*;
+      return chrom;
     }
   }
+  return nullptr;
 }
