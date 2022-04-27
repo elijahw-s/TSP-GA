@@ -9,18 +9,19 @@
 // Generate a Deme of the specified size with all-random chromosomes.
 // Also receives a mutation rate in the range [0-1].
 Deme::Deme(const Cities* cities_ptr, unsigned pop_size, double mut_rate)
+  : mut_rate_(mut_rate), generator_(rand())
 {
   for (unsigned i=0; i<pop_size; i++){
-
-
+    pop_.push_back(new Chromosome(cities_ptr));
   }
-  double mut_rate_ = mut_rate;
 }
 
 // Clean up as necessary
 Deme::~Deme()
 {
-  // Add your implementation here
+  for (auto item : pop_){
+    delete item;
+  }
 }
 
 // Evolve a single generation of new chromosomes, as follows:
@@ -32,15 +33,25 @@ Deme::~Deme()
 // After we've generated pop_size new chromosomes, we delete all the old ones.
 void Deme::compute_next_generation()
 {
+  static std::uniform_real_distribution<> dist(0.0, 1.0);
   std::vector<Chromosome*> new_pop_;
   for (int i=0; i<pop_size/2; i++){
     auto chrom1 = select_parent();
     auto chrom2 = select_parent();
+    if (dist(generator) <= mut_rate_){
+      chrom1.mutate()
+    }
+    if (dist(generator) <= mut_rate_){
+      chrom2.mutate()
+    }
     auto new_chroms = chrom1.recombine(*chrom2);
     new_pop_.push_back(new_chroms.first);
     new_pop_.push_back(new_chroms.second);
   }
-  pop_ = new_pop_;
+  for (auto i : pop_){
+    delete i;
+  }
+  std::swap(pop_, new_pop_);
 }
 
 // Return a copy of the chromosome with the highest fitness.
